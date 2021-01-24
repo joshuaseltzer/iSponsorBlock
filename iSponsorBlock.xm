@@ -83,7 +83,7 @@ NSString *modifiedTimeString;
             }
         }
     }
-    /*if([overlayView isKindOfClass:%c(YTMainAppVideoPlayerOverlayView)]){
+    if([overlayView isKindOfClass:%c(YTMainAppVideoPlayerOverlayView)]){
         YTPlayerBarSegmentedProgressView *segmentedProgressView = [self.view.overlayView.playerBar.playerBar valueForKey:@"_segmentedProgressView"];
         if(segmentedProgressView.playerViewController != self) segmentedProgressView.playerViewController = self;
         for(UIView *markerView in segmentedProgressView.subviews){
@@ -92,7 +92,7 @@ NSString *modifiedTimeString;
                 return;
             }
         }
-    }*/
+    }
 }
 -(void)playbackController:(id)arg1 didActivateVideo:(id)arg2 withPlaybackData:(id)arg3{
     %orig;
@@ -116,18 +116,18 @@ NSString *modifiedTimeString;
     if(arg1.count > 0) modifiedTimeString = [NSString stringWithFormat:@"%ld:%02ld",(lroundf(self.currentVideoTotalMediaTime) - totalSavedTime)/60, (lroundf(self.currentVideoTotalMediaTime) - totalSavedTime)%60];
     else modifiedTimeString = nil;
 }
-/*-(void)scrubToTime:(CGFloat)arg1 {
+-(void)scrubToTime:(CGFloat)arg1 {
     %orig;
     //fixes visual glitch
-    if(!self.isPlayingAd) {
+    /*if(!self.isPlayingAd) {
         id overlayView = self.view.overlayView;
         if([overlayView isKindOfClass:%c(YTMainAppVideoPlayerOverlayView)]){
             YTPlayerBarSegmentedProgressView *segmentedProgressView = [self.view.overlayView.playerBar.playerBar valueForKey:@"_segmentedProgressView"];
             [segmentedProgressView maybeCreateMarkerViews];
 
         }
-    }
-}*/
+    }*/
+}
 %new
 -(void)unskipSegment:(UIButton *)sender {
     if(self.currentSponsorSegment > 0){
@@ -409,11 +409,11 @@ NSArray <SponsorSegment *> *skipSegments;
 AVQueuePlayer *queuePlayer;
 
 %hook CADownloadObject
-/*+ (id)modelWithMetadata:(id)arg1 format:(id)arg2 context:(id)arg3 type:(id)arg4 audioOnly:(_Bool)arg5 directory:(id)arg6 {
++ (id)modelWithMetadata:(id)arg1 format:(id)arg2 context:(id)arg3 type:(id)arg4 audioOnly:(_Bool)arg5 directory:(id)arg6 {
     CADownloadObject *downloadObject = %orig;
     [SponsorBlockRequest getSponsorTimes:downloadObject.videoId completionTarget:downloadObject completionSelector:@selector(setSkipSegments:)];
     return downloadObject;
-}*/
+}
 
 %new
 -(void)setSkipSegments:(NSMutableArray <SponsorSegment *> *)skipSegments {

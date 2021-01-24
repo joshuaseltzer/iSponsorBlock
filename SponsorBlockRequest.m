@@ -43,14 +43,16 @@
             }
             [target performSelectorOnMainThread:sel withObject:skipSegments waitUntilDone:NO];
             
-            /*if([target isKindOfClass:objc_getClass("YTPlayerViewController")]){
+            if([target isKindOfClass:objc_getClass("YTPlayerViewController")]){
                 YTPlayerViewController *playerViewController = (YTPlayerViewController *)target;
                 id overlayView = playerViewController.view.overlayView;
                 if([overlayView isKindOfClass:objc_getClass("YTMainAppVideoPlayerOverlayView")]){
+                    // JS: this seems to be the main culprit for getting iOS 10.3.3 support.  It seems that the overlay view's playerBar.playerBar object is not a YTPlayerBarSegmentedProgressView
+                    // so this call is causing the app to crash.  Significant work would be required to re-write the progress view pieces with the older progress view. 
                     YTPlayerBarSegmentedProgressView *segmentedProgressView = [playerViewController.view.overlayView.playerBar.playerBar valueForKey:@"_segmentedProgressView"];
                     [segmentedProgressView performSelectorOnMainThread:@selector(setSkipSegments:) withObject:seekBarSegments waitUntilDone:NO];
                 }
-            }*/
+            }
         }
     }];
     [dataTask resume];
