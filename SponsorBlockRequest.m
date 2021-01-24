@@ -43,14 +43,14 @@
             }
             [target performSelectorOnMainThread:sel withObject:skipSegments waitUntilDone:NO];
             
-            if([target isKindOfClass:objc_getClass("YTPlayerViewController")]){
+            /*if([target isKindOfClass:objc_getClass("YTPlayerViewController")]){
                 YTPlayerViewController *playerViewController = (YTPlayerViewController *)target;
                 id overlayView = playerViewController.view.overlayView;
                 if([overlayView isKindOfClass:objc_getClass("YTMainAppVideoPlayerOverlayView")]){
                     YTPlayerBarSegmentedProgressView *segmentedProgressView = [playerViewController.view.overlayView.playerBar.playerBar valueForKey:@"_segmentedProgressView"];
                     [segmentedProgressView performSelectorOnMainThread:@selector(setSkipSegments:) withObject:seekBarSegments waitUntilDone:NO];
                 }
-            }
+            }*/
         }
     }];
     [dataTask resume];
@@ -64,7 +64,7 @@
             NSHTTPURLResponse *URLResponse = (NSHTTPURLResponse *)response;
             if(URLResponse.statusCode != 200) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Error" message:[NSString stringWithFormat:@"Error Code: %ld %@", URLResponse.statusCode, [NSHTTPURLResponse localizedStringForStatusCode:URLResponse.statusCode]] preferredStyle:UIAlertControllerStyleAlert];
+                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Error" message:[NSString stringWithFormat:@"Error Code: %ld %@", (long)URLResponse.statusCode, [NSHTTPURLResponse localizedStringForStatusCode:URLResponse.statusCode]] preferredStyle:UIAlertControllerStyleAlert];
                     UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
                     handler:^(UIAlertAction * action) {}];
                     [alert addAction:defaultAction];

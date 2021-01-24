@@ -1,10 +1,10 @@
 #import <UIKit/UIKit.h>
-#include <RemoteLog.h>
+//#include <RemoteLog.h>
 #import <objc/runtime.h>
 
-@protocol HBColorPickerDelegate <NSObject>
+/*@protocol HBColorPickerDelegate <NSObject>
 @optional -(void)colorPicker:(id)colorPicker didSelectColor:(UIColor *)color;
-@end
+@end*/
 
 @interface UIView ()
 -(UIViewController *)_viewControllerForAncestor;
@@ -18,7 +18,7 @@
 @interface UISegment : UIView
 @end
 
-@interface HBColorPickerConfiguration
+/*@interface HBColorPickerConfiguration
 @property (nonatomic, assign) BOOL supportsAlpha;
 @end
 
@@ -31,12 +31,12 @@
 @property (nonatomic, assign) BOOL isDragInteractionEnabled;
 @property (nonatomic, assign) BOOL isDropInteractionEnabled;
 @property (strong, nonatomic) UIColor *color;
-@end
+@end*/
 
-@interface SponsorBlockTableCell : UITableViewCell <HBColorPickerDelegate>
+@interface SponsorBlockTableCell : UITableViewCell //<HBColorPickerDelegate>
 @property (strong, nonatomic) NSString *category;
 @property (strong, nonatomic) UIColor *color;
-@property (strong, nonatomic) HBColorWell *colorWell;
+//@property (strong, nonatomic) HBColorWell *colorWell;
 @end
 
 @interface SponsorBlockSettingsController : UIViewController <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate>

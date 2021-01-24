@@ -1,5 +1,5 @@
 #import "SponsorSegment.h"
-#include <RemoteLog.h>
+//#include <RemoteLog.h>
 @implementation SponsorSegment
 -(instancetype)initWithStartTime:(CGFloat)startTime endTime:(CGFloat)endTime category:(NSString *)category UUID:(NSString *)UUID {
     self = [super init];

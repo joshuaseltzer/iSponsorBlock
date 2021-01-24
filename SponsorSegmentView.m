@@ -1,5 +1,5 @@
 #import "SponsorSegmentView.h"
-#include "RemoteLog.h"
+//#include "RemoteLog.h"
 @implementation SponsorSegmentView
 -(instancetype)initWithFrame:(CGRect)frame sponsorSegment:(SponsorSegment *)segment editable:(BOOL)editable {
     self = [super initWithFrame:frame];
@@ -50,7 +50,11 @@
         [self.categoryLabel.heightAnchor constraintEqualToConstant:self.frame.size.height/2].active = YES;
         [self.categoryLabel.topAnchor constraintEqualToAnchor:self.segmentLabel.bottomAnchor].active = YES;
         
-        self.backgroundColor = UIColor.systemGray4Color;
+        if (@available(iOS 13.0, *)) {
+            self.backgroundColor = UIColor.systemGray4Color;
+        } else {
+            self.backgroundColor = UIColor.grayColor;
+        }
         self.layer.cornerRadius = 10;
         self.segmentLabel.layer.cornerRadius = 10;
         self.categoryLabel.layer.cornerRadius = 10;

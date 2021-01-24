@@ -2,7 +2,7 @@
 #import "colorFunctions.h"
 #import "SponsorBlockSettingsController.h"
 #import "SponsorBlockRequest.h"
-#import "SponsorBlockViewController.h"
+//#import "SponsorBlockViewController.h"
 
 %group Main
 NSString *modifiedTimeString;
@@ -83,7 +83,7 @@ NSString *modifiedTimeString;
             }
         }
     }
-    if([overlayView isKindOfClass:%c(YTMainAppVideoPlayerOverlayView)]){
+    /*if([overlayView isKindOfClass:%c(YTMainAppVideoPlayerOverlayView)]){
         YTPlayerBarSegmentedProgressView *segmentedProgressView = [self.view.overlayView.playerBar.playerBar valueForKey:@"_segmentedProgressView"];
         if(segmentedProgressView.playerViewController != self) segmentedProgressView.playerViewController = self;
         for(UIView *markerView in segmentedProgressView.subviews){
@@ -92,7 +92,7 @@ NSString *modifiedTimeString;
                 return;
             }
         }
-    }
+    }*/
 }
 -(void)playbackController:(id)arg1 didActivateVideo:(id)arg2 withPlaybackData:(id)arg3{
     %orig;
@@ -116,7 +116,7 @@ NSString *modifiedTimeString;
     if(arg1.count > 0) modifiedTimeString = [NSString stringWithFormat:@"%ld:%02ld",(lroundf(self.currentVideoTotalMediaTime) - totalSavedTime)/60, (lroundf(self.currentVideoTotalMediaTime) - totalSavedTime)%60];
     else modifiedTimeString = nil;
 }
--(void)scrubToTime:(CGFloat)arg1 {
+/*-(void)scrubToTime:(CGFloat)arg1 {
     %orig;
     //fixes visual glitch
     if(!self.isPlayingAd) {
@@ -127,7 +127,7 @@ NSString *modifiedTimeString;
 
         }
     }
-}
+}*/
 %new
 -(void)unskipSegment:(UIButton *)sender {
     if(self.currentSponsorSegment > 0){
@@ -204,7 +204,7 @@ NSString *modifiedTimeString;
     %orig;
 }
 
-%new
+/*%new
 -(void)sponsorBlockButtonPressed:(YTQTMButton *)sender {
     self.isDisplayingSponsorBlockViewController = YES;
     self.sponsorBlockButton.hidden = YES;
@@ -213,7 +213,7 @@ NSString *modifiedTimeString;
         [self.playerViewController didPressToggleFullscreen];
     }
     [self presentSponsorBlockViewController];
-}
+}*/
 %new
 -(void)sponsorStartedEndedButtonPressed:(YTQTMButton *)sender {
     if(self.playerViewController.userSkipSegments.lastObject.endTime != -1) {
@@ -233,7 +233,7 @@ NSString *modifiedTimeString;
         [self.sponsorStartedEndedButton setImage:[UIImage imageWithContentsOfFile:@"/var/mobile/Library/Application Support/iSponsorBlock/sponsorblockstart-20@2x.png"] forState:UIControlStateNormal];
     }
 }
-%new
+/*%new
 -(void)presentSponsorBlockViewController {
     SponsorBlockViewController *addSponsorViewController = [[SponsorBlockViewController alloc] init];
     addSponsorViewController.playerViewController = self.playerViewController;
@@ -243,7 +243,7 @@ NSString *modifiedTimeString;
     self.isDisplayingSponsorBlockViewController = YES;
     [self setOverlayVisible:NO];
 
-}
+}*/
 %end
 
 %hook YTPlayerBarSegmentMarkerView
@@ -414,11 +414,11 @@ NSArray <SponsorSegment *> *skipSegments;
 AVQueuePlayer *queuePlayer;
 
 %hook CADownloadObject
-+ (id)modelWithMetadata:(id)arg1 format:(id)arg2 context:(id)arg3 type:(id)arg4 audioOnly:(_Bool)arg5 directory:(id)arg6 {
+/*+ (id)modelWithMetadata:(id)arg1 format:(id)arg2 context:(id)arg3 type:(id)arg4 audioOnly:(_Bool)arg5 directory:(id)arg6 {
     CADownloadObject *downloadObject = %orig;
     [SponsorBlockRequest getSponsorTimes:downloadObject.videoId completionTarget:downloadObject completionSelector:@selector(setSkipSegments:)];
     return downloadObject;
-}
+}*/
 
 %new
 -(void)setSkipSegments:(NSMutableArray <SponsorSegment *> *)skipSegments {
@@ -436,7 +436,11 @@ AVQueuePlayer *queuePlayer;
     NSDictionary *dict = @{
         @"skipSegments" : segments
     };
-    [dict writeToURL:[NSURL fileURLWithPath:path isDirectory:NO] error:nil];
+    if (@available(iOS 13.0, *)) {
+        [dict writeToURL:[NSURL fileURLWithPath:path isDirectory:NO] error:nil];
+    } else {
+        [dict writeToURL:[NSURL fileURLWithPath:path isDirectory:NO] atomically:YES];
+    }
 }
 %end
 %hook AVPlayerViewController
@@ -640,7 +644,11 @@ NSInteger pageStyle = 0;
         }
         else { //light mode
             UIImage *image = [UIImage imageWithContentsOfFile:@"/var/mobile/Library/Application Support/iSponsorBlock/sponsorblocksettings-20@2x.png"];
-            image = [image imageWithTintColor:UIColor.blackColor renderingMode:UIImageRenderingModeAlwaysTemplate];
+            if (@available(iOS 13.0, *)) {
+                image = [image imageWithTintColor:UIColor.blackColor renderingMode:UIImageRenderingModeAlwaysTemplate];
+            } else {
+                image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            }
             [self.sponsorBlockButton setImage:image forState:UIControlStateNormal];
             [self.sponsorBlockButton setTintColor:UIColor.blackColor];
         }
@@ -713,7 +721,11 @@ static void loadPrefs() {
       @"whitelistedChannels" : kWhitelistedChannels
     };
     if(![newSettings isEqualToDictionary:settings]) {
-        [newSettings writeToURL:[NSURL fileURLWithPath:path isDirectory:NO] error:nil];
+        if (@available(iOS 13.0, *)) {
+            [newSettings writeToURL:[NSURL fileURLWithPath:path isDirectory:NO] error:nil];
+        } else {
+            [newSettings writeToURL:[NSURL fileURLWithPath:path isDirectory:NO] atomically:YES];
+        }
     }
 
 }

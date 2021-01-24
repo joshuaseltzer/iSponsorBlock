@@ -1,8 +1,8 @@
 #import "SponsorBlockSettingsController.h"
-#import "colorFunctions.h"
+//#import "colorFunctions.h"
 
 @implementation SponsorBlockTableCell
--(void)colorPicker:(id)colorPicker didSelectColor:(UIColor *)color {
+/*-(void)colorPicker:(id)colorPicker didSelectColor:(UIColor *)color {
     self.colorWell.color = color;
     NSString *hexString = hexFromUIColor(color);
     
@@ -17,8 +17,8 @@
     [settings setValue:categorySettings forKey:@"categorySettings"];
     [settings writeToURL:[NSURL fileURLWithPath:settingsPath isDirectory:NO] error:nil];
     CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("com.galacticdev.isponsorblockprefs.changed"), NULL, NULL, YES);
-}
--(void)presentColorPicker:(UITableViewCell *)sender {
+}*/
+/*-(void)presentColorPicker:(UITableViewCell *)sender {
     HBColorPickerViewController *viewController = [[objc_getClass("HBColorPickerViewController") alloc] init];
     viewController.delegate = self;
     viewController.popoverPresentationController.sourceView = self;
@@ -32,7 +32,7 @@
     
     //fixes the bottom of the color picker from getting cut off
     viewController.view.frame = CGRectMake(0,-50, viewController.view.frame.size.width, viewController.view.frame.size.height);
-}
+}*/
 @end
 
 @implementation SponsorBlockSettingsController
@@ -45,11 +45,18 @@
     self.settings = [NSMutableDictionary dictionary];
     [self.settings addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:self.settingsPath]];
     
-    self.view.backgroundColor = UIColor.systemBackgroundColor;
+    if (@available(iOS 13.0, *)) {
+        self.view.backgroundColor = UIColor.systemBackgroundColor;
+    }
     
     //detects if device is an se gen 1 or not, crude fix for text getting cut off
+
     if([UIScreen mainScreen].bounds.size.width > 320) {
-        self.tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleInsetGrouped];
+        if (@available(iOS 13.0, *)) {
+            self.tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleInsetGrouped];
+        } else {
+            self.tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleGrouped];
+        }
     }
     else {
         self.tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleGrouped];
@@ -164,13 +171,13 @@
         else {
             tableCell.textLabel.text = @"Set Color To Show in Seek Bar";
             tableCell.textLabel.adjustsFontSizeToFitWidth = YES;
-            HBColorWell *colorWell = [[objc_getClass("HBColorWell") alloc] initWithFrame:CGRectMake(0,0,32,32)];
+            /*HBColorWell *colorWell = [[objc_getClass("HBColorWell") alloc] initWithFrame:CGRectMake(0,0,32,32)];
             [colorWell addTarget:tableCell action:@selector(presentColorPicker:) forControlEvents:UIControlEventTouchUpInside];
             [colorWell addTarget:tableCell action:@selector(colorWellValueChanged:) forControlEvents:UIControlEventValueChanged];
             UIColor *color = colorWithHexString([categorySettings objectForKey:[NSString stringWithFormat:@"%@Color", tableCell.category]]);
             colorWell.color = color;
             tableCell.accessoryView = colorWell;
-            tableCell.colorWell = colorWell;
+            tableCell.colorWell = colorWell;*/
         }
         return tableCell;
     }
@@ -215,7 +222,7 @@
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"SponsorBlockDonationCell"];
         if(indexPath.row == 0) cell.textLabel.text = @"Donate on Venmo!";
         else cell.textLabel.text = @"Donate on PayPal!";
-        cell.imageView.image = [UIImage systemImageNamed:@"dollarsign.circle.fill"];
+        //cell.imageView.image = [UIImage systemImageNamed:@"dollarsign.circle.fill"];
         return cell;
     }
     return nil;
@@ -285,7 +292,11 @@
 }
 
 -(void)writeSettings:(NSDictionary *)settings {
-    [settings writeToURL:[NSURL fileURLWithPath:self.settingsPath isDirectory:NO] error:nil];
+    if (@available(iOS 13.0, *)) {
+        [settings writeToURL:[NSURL fileURLWithPath:self.settingsPath isDirectory:NO] error:nil];
+    } else {
+        [settings writeToURL:[NSURL fileURLWithPath:self.settingsPath isDirectory:NO] atomically:YES];
+    }
     CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("com.galacticdev.isponsorblockprefs.changed"), NULL, NULL, YES);
 }
 @end
